@@ -70,6 +70,16 @@ vi.mock('../lazy-custom-model-actions', () => ({
   ),
 }))
 
+vi.mock('../model-order-editor', () => ({
+  default: ({ onCancel }: { onCancel: () => void }) => (
+    <div data-testid="model-order-editor">
+      <button type="button" onClick={onCancel}>
+        Close order editor
+      </button>
+    </div>
+  ),
+}))
+
 vi.mock('../model-list-item', () => ({
   default: ({
     model,
@@ -467,5 +477,73 @@ describe('ModelList', () => {
 
     expect(screen.queryByTestId('manage-credentials')).not.toBeInTheDocument()
     expect(screen.queryByTestId('add-custom-model')).not.toBeInTheDocument()
+  })
+
+  describe('model order editor', () => {
+    const configurableProvider = {
+      provider: 'test-provider',
+      configurate_methods: [ConfigurationMethodEnum.customizableModel],
+      custom_configuration: { custom_models: [] },
+    } as unknown as ModelProvider
+    const customModels = [
+      { model: 'custom-a', model_type: 'llm', fetch_from: 'customizable-model' },
+      { model: 'custom-b', model_type: 'llm', fetch_from: 'customizable-model' },
+    ] as unknown as ModelItem[]
+
+    it('should not offer sorting when there are no custom models', () => {
+      render(
+        <ModelList
+          provider={configurableProvider}
+          models={mockModels}
+          onCollapse={mockOnCollapse}
+          onChange={mockOnChange}
+        />,
+      )
+
+      expect(
+        screen.queryByRole('button', { name: /modelProvider\.sortModels/ }),
+      ).not.toBeInTheDocument()
+    })
+
+    it('should not offer sorting when the user cannot configure models', () => {
+      mockWorkspacePermissionKeys = []
+
+      render(
+        <ModelList
+          provider={configurableProvider}
+          models={customModels}
+          onCollapse={mockOnCollapse}
+          onChange={mockOnChange}
+        />,
+      )
+
+      expect(
+        screen.queryByRole('button', { name: /modelProvider\.sortModels/ }),
+      ).not.toBeInTheDocument()
+    })
+
+    it('should replace the model rows and custom model actions with the editor while sorting', async () => {
+      const user = userEvent.setup()
+      render(
+        <ModelList
+          provider={configurableProvider}
+          models={customModels}
+          onCollapse={mockOnCollapse}
+          onChange={mockOnChange}
+        />,
+      )
+
+      await user.click(screen.getByRole('button', { name: /modelProvider\.sortModels/ }))
+
+      expect(screen.getByTestId('model-order-editor')).toBeInTheDocument()
+      expect(screen.queryByTestId('add-custom-model')).not.toBeInTheDocument()
+      expect(screen.queryByRole('button', { name: 'custom-a' })).not.toBeInTheDocument()
+
+      await user.click(screen.getByRole('button', { name: 'Close order editor' }))
+
+      expect(screen.queryByTestId('model-order-editor')).not.toBeInTheDocument()
+      expect(screen.getByTestId('add-custom-model')).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: 'custom-a' })).toBeInTheDocument()
+    })
   })
 })

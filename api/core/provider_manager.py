@@ -111,6 +111,7 @@ class _ProviderModelCacheEntry:
     credential_id: str | None
     credential_name: str | None
     encrypted_config: str | None
+    position: int | None = None
 
     @classmethod
     def from_record(cls, record: ProviderModel) -> _ProviderModelCacheEntry:
@@ -123,6 +124,7 @@ class _ProviderModelCacheEntry:
             credential_id=record.credential_id,
             credential_name=credential.credential_name if credential else None,
             encrypted_config=credential.encrypted_config if credential else None,
+            position=record.position,
         )
 
     @classmethod
@@ -135,6 +137,7 @@ class _ProviderModelCacheEntry:
             credential_id=row.get("credential_id"),
             credential_name=row.get("credential_name"),
             encrypted_config=row.get("encrypted_config"),
+            position=row.get("position"),
         )
 
     def to_cache_row(self) -> dict[str, Any]:
@@ -460,7 +463,18 @@ def _attach_active_credentials(
 
 def _load_provider_model_cache_entries(tenant_id: str) -> list[_ProviderModelCacheEntry]:
     with session_factory.create_session() as session:
-        stmt = select(ProviderModel).where(ProviderModel.tenant_id == tenant_id, ProviderModel.is_valid.is_(True))
+        # Workspace-defined positions first, then unordered models in registration order.
+        # `position IS NULL` sorts NULLs last portably (NULLS LAST is not supported by MySQL).
+        stmt = (
+            select(ProviderModel)
+            .where(ProviderModel.tenant_id == tenant_id, ProviderModel.is_valid.is_(True))
+            .order_by(
+                ProviderModel.position.is_(None),
+                ProviderModel.position,
+                ProviderModel.created_at,
+                ProviderModel.id,
+            )
+        )
         provider_models = list(session.scalars(stmt))
         _attach_active_credentials(
             session=session,
@@ -1444,6 +1458,7 @@ class ProviderManager:
                     current_credential_id=provider_model_record.credential_id,
                     current_credential_name=provider_model_record.credential_name,
                     available_model_credentials=available_model_credentials,
+                    position=provider_model_record.position,
                 )
             )
 

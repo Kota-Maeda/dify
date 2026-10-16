@@ -138,6 +138,8 @@ class ProviderModel(TypeBase):
     model_type: Mapped[ModelType] = mapped_column(EnumText(ModelType, length=40), nullable=False)
     credential_id: Mapped[str | None] = mapped_column(StringUUID, nullable=True, default=None)
     is_valid: Mapped[bool] = mapped_column(sa.Boolean, nullable=False, default=False)
+    # Workspace-defined display order; NULL sorts after ordered models.
+    position: Mapped[int | None] = mapped_column(sa.Integer, nullable=True, default=None)
     created_at: Mapped[datetime] = mapped_column(
         DateTime, nullable=False, server_default=func.current_timestamp(), init=False
     )

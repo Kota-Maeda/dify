@@ -306,6 +306,9 @@ import {
   zPatchWorkspacesCurrentModelProvidersByProviderModelsEnableBody,
   zPatchWorkspacesCurrentModelProvidersByProviderModelsEnablePath,
   zPatchWorkspacesCurrentModelProvidersByProviderModelsEnableResponse,
+  zPatchWorkspacesCurrentModelProvidersByProviderModelsOrderBody,
+  zPatchWorkspacesCurrentModelProvidersByProviderModelsOrderPath,
+  zPatchWorkspacesCurrentModelProvidersByProviderModelsOrderResponse,
   zPatchWorkspacesCurrentSkillsBySkillIdBody,
   zPatchWorkspacesCurrentSkillsBySkillIdFilesBody,
   zPatchWorkspacesCurrentSkillsBySkillIdFilesPath,
@@ -1658,6 +1661,26 @@ export const loadBalancingConfigs = {
   byConfigId,
 }
 
+export const patch5 = oc
+  .route({
+    inputStructure: 'detailed',
+    method: 'PATCH',
+    operationId: 'patchWorkspacesCurrentModelProvidersByProviderModelsOrder',
+    path: '/workspaces/current/model-providers/{provider}/models/order',
+    tags: ['console'],
+  })
+  .input(
+    z.object({
+      body: zPatchWorkspacesCurrentModelProvidersByProviderModelsOrderBody,
+      params: zPatchWorkspacesCurrentModelProvidersByProviderModelsOrderPath,
+    }),
+  )
+  .output(zPatchWorkspacesCurrentModelProvidersByProviderModelsOrderResponse)
+
+export const order = {
+  patch: patch5,
+}
+
 export const get18 = oc
   .route({
     inputStructure: 'detailed',
@@ -1730,6 +1753,7 @@ export const models = {
   disable: disable2,
   enable: enable2,
   loadBalancingConfigs,
+  order,
   parameterRules,
 }
 
@@ -3817,7 +3841,7 @@ export const preview = {
   get: get78,
 }
 
-export const patch5 = oc
+export const patch6 = oc
   .route({
     inputStructure: 'detailed',
     method: 'PATCH',
@@ -3852,7 +3876,7 @@ export const put19 = oc
   .errors({ invalid_request: { status: 400, data: zInvalidRequestError } })
 
 export const files2 = {
-  patch: patch5,
+  patch: patch6,
   put: put19,
   check,
   content,
@@ -3938,7 +3962,7 @@ export const get80 = oc
   .input(z.object({ params: zGetWorkspacesCurrentSkillsBySkillIdVersionsByVersionIdPath }))
   .output(zGetWorkspacesCurrentSkillsBySkillIdVersionsByVersionIdResponse)
 
-export const patch6 = oc
+export const patch7 = oc
   .route({
     inputStructure: 'detailed',
     method: 'PATCH',
@@ -3958,7 +3982,7 @@ export const patch6 = oc
 export const byVersionId = {
   delete: delete14,
   get: get80,
-  patch: patch6,
+  patch: patch7,
 }
 
 export const get81 = oc
@@ -4005,7 +4029,7 @@ export const get82 = oc
   .input(z.object({ params: zGetWorkspacesCurrentSkillsBySkillIdPath }))
   .output(zGetWorkspacesCurrentSkillsBySkillIdResponse)
 
-export const patch7 = oc
+export const patch8 = oc
   .route({
     inputStructure: 'detailed',
     method: 'PATCH',
@@ -4025,7 +4049,7 @@ export const patch7 = oc
 export const bySkillId = {
   delete: delete15,
   get: get82,
-  patch: patch7,
+  patch: patch8,
   assist,
   duplicate,
   export: export2,

@@ -1493,6 +1493,14 @@ export const zLoadBalancingCredentialPayload = z.object({
 })
 
 /**
+ * ParserModelsOrder
+ */
+export const zParserModelsOrder = z.object({
+  model_type: zModelType,
+  models: z.array(z.string().min(1).max(255)).max(1000),
+})
+
+/**
  * Inner
  */
 export const zInner = z.object({
@@ -3273,6 +3281,7 @@ export const zCustomModelConfiguration = z.object({
   current_credential_name: z.string().nullish(),
   model: z.string(),
   model_type: zModelType,
+  position: z.int().nullish(),
   unadded_to_model_list: z.boolean().optional().default(false),
 })
 
@@ -5039,6 +5048,18 @@ export const zPostWorkspacesCurrentModelProvidersByProviderModelsLoadBalancingCo
  */
 export const zPostWorkspacesCurrentModelProvidersByProviderModelsLoadBalancingConfigsByConfigIdCredentialsValidateResponse =
   zLoadBalancingCredentialValidateResponse
+
+export const zPatchWorkspacesCurrentModelProvidersByProviderModelsOrderBody = zParserModelsOrder
+
+export const zPatchWorkspacesCurrentModelProvidersByProviderModelsOrderPath = z.object({
+  provider: z.string(),
+})
+
+/**
+ * Model order updated successfully
+ */
+export const zPatchWorkspacesCurrentModelProvidersByProviderModelsOrderResponse =
+  zSimpleResultResponse
 
 export const zGetWorkspacesCurrentModelProvidersByProviderModelsParameterRulesPath = z.object({
   provider: z.string(),

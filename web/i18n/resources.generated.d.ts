@@ -3154,6 +3154,8 @@ export default interface Resources {
     'modelProvider.selector.showIncompatibleModels': 'Show incompatible models'
     'modelProvider.selector.suggestionTip': 'Recommended for agent tasks'
     'modelProvider.showModels': 'Show Models'
+    'modelProvider.sortModels': 'Sort'
+    'modelProvider.sortModelsTip': 'Drag custom models to set their display order in this workspace.'
     'modelProvider.speechToTextModel.key': 'Speech-to-Text Model'
     'modelProvider.speechToTextModel.tip': 'Set the default model for speech-to-text input in conversation.'
     'modelProvider.systemModelSettings': 'Default Models'

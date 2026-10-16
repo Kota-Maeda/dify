@@ -14,6 +14,7 @@ import { useLazyModelProviderDetail } from '../hooks'
 import LazyCustomModelActions from './lazy-custom-model-actions'
 // import Tab from './tab'
 import ModelListItem from './model-list-item'
+import ModelOrderEditor from './model-order-editor'
 
 const ModelLoadBalancingLoadingDialog = ({
   onClose,
@@ -76,6 +77,11 @@ const ModelList: FC<ModelListProps> = ({ provider, models, onCollapse, onChange 
     useState<ModelLoadBalancingModalProps | null>(null)
   const [loadingModelKey, setLoadingModelKey] = useState<string | null>(null)
   const [isModelLoadBalancingModalLoading, setIsModelLoadBalancingModalLoading] = useState(false)
+  const [isSorting, setIsSorting] = useState(false)
+  const canSortModels =
+    isConfigurable &&
+    canConfigureModels &&
+    models.some((model) => model.fetch_from === ConfigurationMethodEnum.customizableModel)
   const { loadProviderDetail } = useLazyModelProviderDetail(provider.provider)
   const onModifyLoadBalancing = useCallback(
     async (model: ModelItem, credential?: Credential) => {
@@ -142,26 +148,46 @@ const ModelList: FC<ModelListProps> = ({ provider, models, onCollapse, onChange 
               </button>
             </span>
             {isConfigurable && canConfigureModels && (
-              <div className="flex grow justify-end">
-                <LazyCustomModelActions provider={provider} />
+              <div className="flex grow items-center justify-end gap-1">
+                {canSortModels && !isSorting && (
+                  <button
+                    type="button"
+                    className="inline-flex h-6 cursor-pointer items-center rounded-lg border-none bg-transparent px-1.5 system-xs-medium text-text-tertiary outline-hidden hover:bg-state-base-hover focus-visible:ring-2 focus-visible:ring-state-accent-solid"
+                    onClick={() => setIsSorting(true)}
+                  >
+                    <span aria-hidden className="mr-0.5 i-ri-arrow-up-down-line size-3.5" />
+                    {t(($) => $['modelProvider.sortModels'], { ns: 'modelProvider' })}
+                  </button>
+                )}
+                {/* Hidden while sorting so the list cannot change under the order editor */}
+                {!isSorting && <LazyCustomModelActions provider={provider} />}
               </div>
             )}
           </div>
-          {models.map((model) => (
-            <ModelListItem
-              key={getModelKey(model)}
-              {...{
-                model,
-                provider,
-                isConfigurable,
-                isLoadingLoadBalancing: loadingModelKey === getModelKey(model),
-                isLoadBalancingDisabled:
-                  loadingModelKey !== null && loadingModelKey !== getModelKey(model),
-                onChange,
-                onModifyLoadBalancing,
-              }}
+          {isSorting && (
+            <ModelOrderEditor
+              provider={provider}
+              models={models}
+              onCancel={() => setIsSorting(false)}
+              onSaved={onChange}
             />
-          ))}
+          )}
+          {!isSorting &&
+            models.map((model) => (
+              <ModelListItem
+                key={getModelKey(model)}
+                {...{
+                  model,
+                  provider,
+                  isConfigurable,
+                  isLoadingLoadBalancing: loadingModelKey === getModelKey(model),
+                  isLoadBalancingDisabled:
+                    loadingModelKey !== null && loadingModelKey !== getModelKey(model),
+                  onChange,
+                  onModifyLoadBalancing,
+                }}
+              />
+            ))}
         </div>
       </div>
       {isModelLoadBalancingModalLoading && modelLoadBalancingModalProps && (

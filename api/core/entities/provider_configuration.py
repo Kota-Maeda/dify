@@ -1416,6 +1416,42 @@ class ProviderConfiguration(BaseModel):
         if provider_models_changed:
             self._invalidate_provider_configuration_cache(provider_models=True)
 
+    def update_custom_models_order(self, model_type: ModelType, models: Sequence[str]):
+        """
+        Set the workspace display order of custom models.
+
+        Models are positioned by their index in ``models``; custom models of the same type
+        that are omitted lose their position and fall back to the default order.
+        :param model_type: model type
+        :param models: model names in the desired display order
+        :return:
+        """
+        if len(set(models)) != len(models):
+            raise ValueError("Duplicate models in order.")
+
+        with Session(db.engine) as session:
+            stmt = select(ProviderModel).where(
+                ProviderModel.tenant_id == self.tenant_id,
+                ProviderModel.provider_name.in_(self._get_provider_names()),
+                ProviderModel.model_type.in_(_model_type_db_literals(model_type)),
+            )
+            # A model can have rows under both the legacy and the full plugin provider name; order them all.
+            records_by_model: defaultdict[str, list[ProviderModel]] = defaultdict(list)
+            for record in session.execute(stmt).scalars():
+                records_by_model[record.model_name].append(record)
+
+            unknown_models = [model for model in models if model not in records_by_model]
+            if unknown_models:
+                raise ValueError(f"{len(unknown_models)} custom model(s) not found.")
+
+            positions = {model: index for index, model in enumerate(models)}
+            for model_name, records in records_by_model.items():
+                for record in records:
+                    record.position = positions.get(model_name)
+            session.commit()
+
+        self._invalidate_provider_configuration_cache(provider_models=True)
+
     def _get_provider_model_setting(
         self, model_type: ModelType, model: str, session: Session
     ) -> ProviderModelSetting | None:
@@ -1737,7 +1773,22 @@ class ProviderConfiguration(BaseModel):
         if hasattr(self.provider, "position") and self.provider.position:
             model_type_positions = self.provider.position
 
+        # Workspace-defined order of custom models, set by admins and taking precedence over the plugin's order
+        workspace_positions = {
+            (m.model_type, m.model): m.position
+            for m in self.custom_configuration.models
+            if m.position is not None and not m.unadded_to_model_list
+        }
+
         def get_sort_key(model: ModelWithProviderEntity):
+            workspace_position = (
+                workspace_positions.get((model.model_type, model.model))
+                if model.fetch_from == FetchFrom.CUSTOMIZABLE_MODEL
+                else None
+            )
+            if workspace_position is not None:
+                return (model.model_type.value, 0, workspace_position)
+
             # Get the position list for the current model type
             positions = model_type_positions.get(model.model_type.value, [])
 
@@ -1745,8 +1796,8 @@ class ProviderConfiguration(BaseModel):
             # Otherwise use a large value (list length) to place undefined models at the end
             position_index = positions.index(model.model) if model.model in positions else len(positions)
 
-            # Return composite sort key: (model_type value, model position index)
-            return (model.model_type.value, position_index)
+            # Return composite sort key: (model_type value, workspace-ordered first, model position index)
+            return (model.model_type.value, 1, position_index)
 
         # Deduplicate
         provider_models = list({(m.model, m.model_type, m.fetch_from): m for m in provider_models}.values())

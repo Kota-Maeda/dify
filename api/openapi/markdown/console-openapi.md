@@ -12027,6 +12027,26 @@ Update a plugin endpoint
 | 200 | Credential validation result | **application/json**: [LoadBalancingCredentialValidateResponse](#loadbalancingcredentialvalidateresponse)<br> |
 | default | Error | **application/json**: [ErrorResponse](#errorresponse)<br> |
 
+### [PATCH] /workspaces/current/model-providers/{provider}/models/order
+#### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| provider | path |  | Yes | string |
+
+#### Request Body
+
+| Required | Schema |
+| -------- | ------ |
+|  Yes | **application/json**: [ParserModelsOrder](#parsermodelsorder)<br> |
+
+#### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | Model order updated successfully | **application/json**: [SimpleResultResponse](#simpleresultresponse)<br> |
+| default | Error | **application/json**: [ErrorResponse](#errorresponse)<br> |
+
 ### [GET] /workspaces/current/model-providers/{provider}/models/parameter-rules
 #### Parameters
 
@@ -19872,6 +19892,7 @@ Model class for provider custom model configuration.
 | current_credential_name | string |  | No |
 | model | string |  | Yes |
 | model_type | [ModelType](#modeltype) |  | Yes |
+| position | integer |  | No |
 | unadded_to_model_list | boolean |  | No |
 
 #### CustomizeTokenStrategy
@@ -24100,6 +24121,13 @@ Enum class for parameter type.
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
 | model_type | [ModelType](#modeltype) |  | No |
+
+#### ParserModelsOrder
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| model_type | [ModelType](#modeltype) |  | Yes |
+| models | [ string ] | Custom model names in the desired display order. Custom models of this type that are omitted lose their order; an empty list resets the order. | Yes |
 
 #### ParserParameter
 

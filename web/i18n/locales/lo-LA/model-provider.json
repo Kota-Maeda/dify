@@ -113,6 +113,8 @@
   "modelProvider.selector.showIncompatibleModels": "ສະແດງໂມເດວທີ່ເຂົ້າກັນບໍ່ໄດ້",
   "modelProvider.selector.suggestionTip": "ແນະນຳສຳລັບວຽກງານຂອງ Agent",
   "modelProvider.showModels": "ສະແດງໂມເດວ",
+  "modelProvider.sortModels": "Sort",
+  "modelProvider.sortModelsTip": "Drag custom models to set their display order in this workspace.",
   "modelProvider.speechToTextModel.key": "ໂມເດວປ່ຽນສຽງເປັນຂໍ້ຄວາມ",
   "modelProvider.speechToTextModel.tip": "ຕັ້ງຄ່າໂມເດວເລີ່ມຕົ້ນສຳລັບການປ້ອນສຽງເປັນຂໍ້ຄວາມໃນການສົນທະນາ.",
   "modelProvider.systemModelSettings": "ໂມເດວເລີ່ມຕົ້ນ",

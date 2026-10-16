@@ -113,6 +113,8 @@
   "modelProvider.selector.showIncompatibleModels": "عرض النماذج غير المتوافقة",
   "modelProvider.selector.suggestionTip": "موصى به لمهام الوكيل",
   "modelProvider.showModels": "عرض النماذج",
+  "modelProvider.sortModels": "Sort",
+  "modelProvider.sortModelsTip": "Drag custom models to set their display order in this workspace.",
   "modelProvider.speechToTextModel.key": "نموذج تحويل الكلام إلى نص",
   "modelProvider.speechToTextModel.tip": "تعيين النموذج الافتراضي لإدخال تحويل الكلام إلى نص في المحادثة.",
   "modelProvider.systemModelSettings": "إعدادات نموذج النظام",
