@@ -113,6 +113,8 @@
   "modelProvider.selector.showIncompatibleModels": "Mostrar modelos incompatíveis",
   "modelProvider.selector.suggestionTip": "Recomendado para tarefas de agente",
   "modelProvider.showModels": "Mostrar Modelos",
+  "modelProvider.sortModels": "Sort",
+  "modelProvider.sortModelsTip": "Drag custom models to set their display order in this workspace.",
   "modelProvider.speechToTextModel.key": "Modelo de Fala para Texto",
   "modelProvider.speechToTextModel.tip": "Defina o modelo padrão para entrada de fala para texto na conversa.",
   "modelProvider.systemModelSettings": "Configurações do Modelo do Sistema",

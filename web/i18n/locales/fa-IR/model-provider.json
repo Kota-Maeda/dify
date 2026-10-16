@@ -113,6 +113,8 @@
   "modelProvider.selector.showIncompatibleModels": "نمایش مدل‌های ناسازگار",
   "modelProvider.selector.suggestionTip": "پیشنهادی برای وظایف عامل",
   "modelProvider.showModels": "نمایش مدل‌ها",
+  "modelProvider.sortModels": "Sort",
+  "modelProvider.sortModelsTip": "Drag custom models to set their display order in this workspace.",
   "modelProvider.speechToTextModel.key": "مدل تبدیل گفتار به متن",
   "modelProvider.speechToTextModel.tip": "مدل پیش‌فرض را برای ورودی گفتار به متن در مکالمه تنظیم کنید.",
   "modelProvider.systemModelSettings": "تنظیمات مدل سیستم",

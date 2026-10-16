@@ -743,6 +743,19 @@ class ModelProviderService:
         provider_configuration = self._get_provider_configuration(tenant_id, provider)
         provider_configuration.delete_custom_model(model_type=ModelType(model_type), model=model)
 
+    def update_models_order(self, tenant_id: str, provider: str, model_type: str, models: list[str]):
+        """
+        update the display order of custom models.
+
+        :param tenant_id: workspace id
+        :param provider: provider name
+        :param model_type: model type
+        :param models: model names in the desired display order
+        :return:
+        """
+        provider_configuration = self._get_provider_configuration(tenant_id, provider)
+        provider_configuration.update_custom_models_order(model_type=ModelType(model_type), models=models)
+
     def get_models_by_model_type(self, tenant_id: str, model_type: str) -> list[ProviderWithModelsResponse]:
         """
         get models by model type.

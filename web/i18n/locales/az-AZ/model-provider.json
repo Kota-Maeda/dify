@@ -113,6 +113,8 @@
   "modelProvider.selector.showIncompatibleModels": "Uyğun olmayan modelləri göstər",
   "modelProvider.selector.suggestionTip": "Agent tapşırıqları üçün tövsiyə olunur",
   "modelProvider.showModels": "Modelləri göstər",
+  "modelProvider.sortModels": "Sort",
+  "modelProvider.sortModelsTip": "Drag custom models to set their display order in this workspace.",
   "modelProvider.speechToTextModel.key": "Nitqi mətnə çevirmə modeli",
   "modelProvider.speechToTextModel.tip": "Söhbətdə nitqi mətnə çevirmək üçün standart modeli təyin et.",
   "modelProvider.systemModelSettings": "Standart modellər",

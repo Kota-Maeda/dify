@@ -3,6 +3,7 @@ from unittest.mock import MagicMock, Mock, patch
 
 import pytest
 from flask import Flask
+from pydantic import ValidationError
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
@@ -14,6 +15,7 @@ from controllers.console.workspace.models import (
     ModelProviderModelCredentialSwitchApi,
     ModelProviderModelDisableApi,
     ModelProviderModelEnableApi,
+    ModelProviderModelOrderApi,
     ModelProviderModelParameterRuleApi,
     ModelProviderModelValidateApi,
     ParserCreateCredential,
@@ -21,6 +23,7 @@ from controllers.console.workspace.models import (
     ParserDeleteModels,
     ParserGetCredentials,
     ParserGetDefault,
+    ParserModelsOrder,
     ParserParameter,
     ParserPostDefault,
     ParserPostModels,
@@ -440,6 +443,33 @@ class TestModelEnableDisableApis:
             result = method(api, ParserDeleteModels.model_validate(payload), "tenant1", "openai")
 
         assert result["result"] == "success"
+
+
+class TestModelProviderModelOrderApi:
+    def test_update_order(self, app: Flask) -> None:
+        api = ModelProviderModelOrderApi()
+        method = unwrap(api.patch)
+
+        payload = {
+            "model_type": ModelType.LLM,
+            "models": ["model-b", "model-a"],
+        }
+
+        with (
+            app.test_request_context("/", json=payload),
+            patch("controllers.console.workspace.models.ModelProviderService") as service_cls,
+        ):
+            result = method(api, ParserModelsOrder.model_validate(payload), "tenant1", "openai")
+
+        assert result["result"] == "success"
+        service_cls.return_value.update_models_order.assert_called_once_with(
+            tenant_id="tenant1", provider="openai", model_type=ModelType.LLM, models=["model-b", "model-a"]
+        )
+
+    @pytest.mark.parametrize("model_name", ["", "m" * 256])
+    def test_rejects_invalid_model_names(self, model_name: str) -> None:
+        with pytest.raises(ValidationError):
+            ParserModelsOrder.model_validate({"model_type": ModelType.LLM, "models": [model_name]})
 
 
 class TestModelProviderModelValidateApi:

@@ -113,6 +113,8 @@
   "modelProvider.selector.showIncompatibleModels": "互換性のないモデルを表示",
   "modelProvider.selector.suggestionTip": "エージェントタスクに推奨",
   "modelProvider.showModels": "モデルの表示",
+  "modelProvider.sortModels": "並べ替え",
+  "modelProvider.sortModelsTip": "カスタムモデルをドラッグして、このワークスペースでの表示順を設定します。",
   "modelProvider.speechToTextModel.key": "音声からテキストへの変換モデル",
   "modelProvider.speechToTextModel.tip": "会話での音声からテキストへの変換に使用するデフォルトモデルを設定します。",
   "modelProvider.systemModelSettings": "システムモデル設定",

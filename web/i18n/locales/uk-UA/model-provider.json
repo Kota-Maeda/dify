@@ -113,6 +113,8 @@
   "modelProvider.selector.showIncompatibleModels": "Показати несумісні моделі",
   "modelProvider.selector.suggestionTip": "Рекомендовано для завдань агента",
   "modelProvider.showModels": "Показати моделі",
+  "modelProvider.sortModels": "Sort",
+  "modelProvider.sortModelsTip": "Drag custom models to set their display order in this workspace.",
   "modelProvider.speechToTextModel.key": "Модель перетворення мовлення в текст",
   "modelProvider.speechToTextModel.tip": "Встановіть модель за замовчуванням для введення мовлення в текст під час розмови.",
   "modelProvider.systemModelSettings": "Налаштування системної моделі",

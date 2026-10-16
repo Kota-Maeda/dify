@@ -113,6 +113,8 @@
   "modelProvider.selector.showIncompatibleModels": "Tampilkan model yang tidak kompatibel",
   "modelProvider.selector.suggestionTip": "Direkomendasikan untuk tugas agen",
   "modelProvider.showModels": "Tampilkan Model",
+  "modelProvider.sortModels": "Sort",
+  "modelProvider.sortModelsTip": "Drag custom models to set their display order in this workspace.",
   "modelProvider.speechToTextModel.key": "Model Ucapan-ke-Teks",
   "modelProvider.speechToTextModel.tip": "Atur model default untuk input ucapan-ke-teks dalam percakapan.",
   "modelProvider.systemModelSettings": "Pengaturan Model Sistem",

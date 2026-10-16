@@ -1,5 +1,5 @@
 import logging
-from typing import Any, cast
+from typing import Annotated, Any, cast
 
 from flask_restx import Resource
 from pydantic import BaseModel, Field, field_validator
@@ -61,6 +61,17 @@ class ParserPostDefault(BaseModel):
 class ParserDeleteModels(BaseModel):
     model: str
     model_type: ModelType
+
+
+class ParserModelsOrder(BaseModel):
+    model_type: ModelType
+    models: list[Annotated[str, Field(min_length=1, max_length=255)]] = Field(
+        max_length=1000,
+        description=(
+            "Custom model names in the desired display order. "
+            "Custom models of this type that are omitted lose their order; an empty list resets the order."
+        ),
+    )
 
 
 class LoadBalancingPayload(BaseModel):
@@ -181,6 +192,7 @@ register_schema_models(
     ParserGetDefault,
     ParserPostDefault,
     ParserDeleteModels,
+    ParserModelsOrder,
     ParserPostModels,
     ParserGetCredentials,
     ParserCreateCredential,
@@ -330,6 +342,28 @@ class ModelProviderModelApi(Resource):
         )
 
         return "", 204
+
+
+@console_ns.route(
+    "/workspaces/current/model-providers/<path:provider>/models/order", endpoint="model-provider-models-order"
+)
+class ModelProviderModelOrderApi(Resource):
+    @console_ns.expect(console_ns.models[ParserModelsOrder.__name__])
+    @console_ns.response(200, "Model order updated successfully", console_ns.models[SimpleResultResponse.__name__])
+    @setup_required
+    @login_required
+    @is_admin_or_owner_required
+    @rbac_permission_required(RBACCheck(RBACPermission.PLUGIN_PREFERENCES, Workspace()))
+    @account_initialization_required
+    @with_current_tenant_id
+    @model_validate(ParserModelsOrder)
+    def patch(self, req_data: ParserModelsOrder, tenant_id: str, provider: str):
+        model_provider_service = ModelProviderService()
+        model_provider_service.update_models_order(
+            tenant_id=tenant_id, provider=provider, model_type=req_data.model_type, models=req_data.models
+        )
+
+        return SimpleResultResponse(result="success").model_dump(mode="json")
 
 
 @console_ns.route("/workspaces/current/model-providers/<path:provider>/models/credentials")

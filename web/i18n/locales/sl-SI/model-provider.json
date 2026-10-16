@@ -113,6 +113,8 @@
   "modelProvider.selector.showIncompatibleModels": "Prikaži nezdružljive modele",
   "modelProvider.selector.suggestionTip": "Priporočeno za opravila agenta",
   "modelProvider.showModels": "Prikaži modele",
+  "modelProvider.sortModels": "Sort",
+  "modelProvider.sortModelsTip": "Drag custom models to set their display order in this workspace.",
   "modelProvider.speechToTextModel.key": "Model za pretvorbo govora v besedilo",
   "modelProvider.speechToTextModel.tip": "Nastavite privzeti model za vnos govora v besedilo v pogovoru.",
   "modelProvider.systemModelSettings": "Nastavitve sistemskega modela",

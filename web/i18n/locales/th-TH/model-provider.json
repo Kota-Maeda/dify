@@ -113,6 +113,8 @@
   "modelProvider.selector.showIncompatibleModels": "แสดงโมเดลที่ไม่รองรับ",
   "modelProvider.selector.suggestionTip": "แนะนำสำหรับงานของเอเจนต์",
   "modelProvider.showModels": "แสดงโมเดล",
+  "modelProvider.sortModels": "Sort",
+  "modelProvider.sortModelsTip": "Drag custom models to set their display order in this workspace.",
   "modelProvider.speechToTextModel.key": "โมเดลคําพูดเป็นข้อความ",
   "modelProvider.speechToTextModel.tip": "ตั้งค่าโมเดลเริ่มต้นสําหรับการป้อนข้อมูลคําพูดเป็นข้อความในการสนทนา",
   "modelProvider.systemModelSettings": "การตั้งค่ารุ่นระบบ",

@@ -114,6 +114,8 @@ class CustomModelConfiguration(BaseModel):
     current_credential_name: str | None = None
     available_model_credentials: list[CredentialConfiguration] = []
     unadded_to_model_list: bool = False
+    # workspace-defined display order, None means not ordered
+    position: int | None = None
 
     # pydantic configs
     model_config = ConfigDict(protected_namespaces=())

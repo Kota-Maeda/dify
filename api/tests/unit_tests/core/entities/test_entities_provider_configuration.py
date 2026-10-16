@@ -1472,3 +1472,105 @@ def test_custom_model_switch_rolls_back_on_update_failure(
     assert persisted_model.credential_id == first.id
     credentials_cache.assert_not_called()
     configuration_cache.assert_not_called()
+
+
+def test_get_provider_models_workspace_position_overrides_plugin_position() -> None:
+    configuration = _build_provider_configuration()
+    configuration.using_provider_type = ProviderType.CUSTOM
+    configuration.provider.position = {"llm": ["plugin-first", "plugin-second"]}
+    configuration.custom_configuration.models = [
+        CustomModelConfiguration(model="unordered", model_type=ModelType.LLM, credentials={}),
+        CustomModelConfiguration(model="plugin-second", model_type=ModelType.LLM, credentials={}),
+        CustomModelConfiguration(model="plugin-first", model_type=ModelType.LLM, credentials={}),
+        CustomModelConfiguration(model="ordered-later", model_type=ModelType.LLM, credentials={}, position=1),
+        CustomModelConfiguration(model="ordered-first", model_type=ModelType.LLM, credentials={}, position=0),
+    ]
+    provider_schema = ProviderEntity(
+        provider="openai",
+        label=I18nObject(en_US="OpenAI"),
+        supported_model_types=[ModelType.LLM],
+        configurate_methods=[ConfigurateMethod.CUSTOMIZABLE_MODEL],
+    )
+    assembly = PluginModelAssembly(tenant_id="tenant-1")
+
+    with (
+        patch("core.entities.provider_configuration.create_plugin_model_assembly", return_value=assembly),
+        patch.object(assembly.model_provider_factory, "get_model_provider", return_value=provider_schema),
+        patch.object(
+            ProviderConfiguration,
+            "get_model_schema",
+            side_effect=lambda model_type, model, credentials: _build_ai_model(model),
+        ),
+    ):
+        models = configuration.get_provider_models(model_type=ModelType.LLM)
+
+    assert [model.model for model in models] == [
+        "ordered-first",
+        "ordered-later",
+        "plugin-first",
+        "plugin-second",
+        "unordered",
+    ]
+
+
+def test_update_custom_models_order_persists_positions(sqlite_provider_session: Session) -> None:
+    configuration = _build_provider_configuration()
+    first = _provider_model_record(sqlite_provider_session, model="model-a")
+    second = _provider_model_record(sqlite_provider_session, model="model-b")
+    omitted = _provider_model_record(sqlite_provider_session, model="model-c")
+    omitted.position = 5
+    sqlite_provider_session.commit()
+    other_tenant = _provider_model_record(sqlite_provider_session, model="model-a", tenant_id="other-tenant")
+    first_id, second_id, omitted_id, other_tenant_id = first.id, second.id, omitted.id, other_tenant.id
+
+    with _mock_cache_boundaries() as (_, configuration_cache):
+        configuration.update_custom_models_order(ModelType.LLM, ["model-b", "model-a"])
+
+    sqlite_provider_session.expire_all()
+    assert sqlite_provider_session.get(ProviderModel, second_id).position == 0
+    assert sqlite_provider_session.get(ProviderModel, first_id).position == 1
+    assert sqlite_provider_session.get(ProviderModel, omitted_id).position is None
+    assert sqlite_provider_session.get(ProviderModel, other_tenant_id).position is None
+    configuration_cache.assert_called_once_with(provider_models=True)
+
+
+def test_update_custom_models_order_updates_legacy_and_full_provider_rows(
+    sqlite_provider_session: Session,
+) -> None:
+    configuration = _build_provider_configuration(provider_name="langgenius/openai/openai")
+    full_id_row = _provider_model_record(
+        sqlite_provider_session, provider_name="langgenius/openai/openai", model="model-a"
+    )
+    legacy_row = _provider_model_record(sqlite_provider_session, provider_name="openai", model="model-a")
+    other = _provider_model_record(sqlite_provider_session, provider_name="openai", model="model-b")
+    full_id_row_id, legacy_row_id, other_id = full_id_row.id, legacy_row.id, other.id
+
+    with _mock_cache_boundaries():
+        configuration.update_custom_models_order(ModelType.LLM, ["model-b", "model-a"])
+
+    sqlite_provider_session.expire_all()
+    assert sqlite_provider_session.get(ProviderModel, other_id).position == 0
+    assert sqlite_provider_session.get(ProviderModel, full_id_row_id).position == 1
+    assert sqlite_provider_session.get(ProviderModel, legacy_row_id).position == 1
+
+
+@pytest.mark.parametrize(
+    ("models", "message"),
+    [
+        (["model-a", "model-a"], "Duplicate models"),
+        (["model-a", "missing"], r"1 custom model\(s\) not found"),
+    ],
+)
+def test_update_custom_models_order_rejects_invalid_input(
+    sqlite_provider_session: Session, models: list[str], message: str
+) -> None:
+    configuration = _build_provider_configuration()
+    record = _provider_model_record(sqlite_provider_session, model="model-a")
+    record_id = record.id
+
+    with _mock_cache_boundaries() as (_, configuration_cache), pytest.raises(ValueError, match=message):
+        configuration.update_custom_models_order(ModelType.LLM, models)
+
+    sqlite_provider_session.expire_all()
+    assert sqlite_provider_session.get(ProviderModel, record_id).position is None
+    configuration_cache.assert_not_called()

@@ -448,6 +448,11 @@ export type LoadBalancingCredentialValidateResponse = {
   result: string
 }
 
+export type ParserModelsOrder = {
+  model_type: ModelType
+  models: Array<string>
+}
+
 export type ModelParameterRuleListResponse = {
   data: Array<ParameterRule>
 }
@@ -2782,6 +2787,7 @@ export type CustomModelConfiguration = {
   current_credential_name?: string | null
   model: string
   model_type: ModelType
+  position?: number | null
   unadded_to_model_list?: boolean
 }
 
@@ -4439,6 +4445,29 @@ export type PostWorkspacesCurrentModelProvidersByProviderModelsLoadBalancingConf
 
 export type PostWorkspacesCurrentModelProvidersByProviderModelsLoadBalancingConfigsByConfigIdCredentialsValidateResponse =
   PostWorkspacesCurrentModelProvidersByProviderModelsLoadBalancingConfigsByConfigIdCredentialsValidateResponses[keyof PostWorkspacesCurrentModelProvidersByProviderModelsLoadBalancingConfigsByConfigIdCredentialsValidateResponses]
+
+export type PatchWorkspacesCurrentModelProvidersByProviderModelsOrderData = {
+  body: ParserModelsOrder
+  path: {
+    provider: string
+  }
+  query?: never
+  url: '/workspaces/current/model-providers/{provider}/models/order'
+}
+
+export type PatchWorkspacesCurrentModelProvidersByProviderModelsOrderErrors = {
+  default: ErrorResponse
+}
+
+export type PatchWorkspacesCurrentModelProvidersByProviderModelsOrderError =
+  PatchWorkspacesCurrentModelProvidersByProviderModelsOrderErrors[keyof PatchWorkspacesCurrentModelProvidersByProviderModelsOrderErrors]
+
+export type PatchWorkspacesCurrentModelProvidersByProviderModelsOrderResponses = {
+  200: SimpleResultResponse
+}
+
+export type PatchWorkspacesCurrentModelProvidersByProviderModelsOrderResponse =
+  PatchWorkspacesCurrentModelProvidersByProviderModelsOrderResponses[keyof PatchWorkspacesCurrentModelProvidersByProviderModelsOrderResponses]
 
 export type GetWorkspacesCurrentModelProvidersByProviderModelsParameterRulesData = {
   body?: never

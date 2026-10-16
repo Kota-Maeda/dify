@@ -113,6 +113,8 @@
   "modelProvider.selector.showIncompatibleModels": "Uyumsuz modelleri göster",
   "modelProvider.selector.suggestionTip": "Aracı görevleri için önerilir",
   "modelProvider.showModels": "Modelleri Göster",
+  "modelProvider.sortModels": "Sort",
+  "modelProvider.sortModelsTip": "Drag custom models to set their display order in this workspace.",
   "modelProvider.speechToTextModel.key": "Konuşmadan Metne Modeli",
   "modelProvider.speechToTextModel.tip": "Konuşmada konuşmadan metne giriş için varsayılan modeli ayarlayın.",
   "modelProvider.systemModelSettings": "Sistem Model Ayarları",
